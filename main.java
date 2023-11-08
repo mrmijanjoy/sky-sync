@@ -49,3 +49,97 @@ sunsets = (TextView) findViewById(R.id.sunsets);
 }
 
 }
+
+class weatherTask extends AsyncTask<String, Void, String>{
+
+@Override
+
+protected void onPreExecute() {
+
+super.onPreExecute();
+
+}
+
+@Override
+
+protected String doInBackground(String… args) {
+
+String response = HttpRequest.excuteGet(“https://api.openweathermap.org/data/2.5/weather?q=" + CITY + “&units=metric&appid=” + API);
+
+return response;
+
+}
+
+@Override
+
+protected void onPostExecute(String result) {
+
+try {
+
+JSONObject jsonObj = new JSONObject(result);
+
+JSONObject main = jsonObj.getJSONObject(“main”);
+
+JSONObject weather = jsonObj.getJSONArray(“weather”).getJSONObject(0);
+
+JSONObject sys = jsonObj.getJSONObject(“sys”);
+
+// CALL VALUE IN API :
+
+String city_name = jsonObj.getString(“name”);
+
+String countryname = sys.getString(“country”);
+
+Long updatedAt = jsonObj.getLong(“dt”);
+
+String updatedAtText = “Last Updated at: “ + new SimpleDateFormat(“dd/MM/yyyy hh:mm a”, Locale.ENGLISH).format(new Date(updatedAt * 1000));
+
+String temperature = main.getString(“temp”);
+
+String cast = weather.getString(“description”);
+
+String humi_dity = main.getString(“humidity”);
+
+String temp_min = main.getString(“temp_min”);
+
+String temp_max = main.getString(“temp_max”);
+
+Long rise = sys.getLong(“sunrise”);
+
+String sunrise = new SimpleDateFormat(“hh:mm a”, Locale.ENGLISH).format(new Date(rise * 1000));
+
+Long set = sys.getLong(“sunset”);
+
+String sunset = new SimpleDateFormat(“hh:mm a”, Locale.ENGLISH).format(new Date(set * 1000));
+
+// SET ALL VALUES IN TEXTBOX :
+
+city.setText(city_name);
+
+country.setText(countryname);
+
+time.setText(updatedAtText);
+
+temp.setText(temperature + “°C”);
+
+forecast.setText(cast);
+
+humidity.setText(humi_dity);
+
+min_temp.setText(temp_min);
+
+max_temp.setText(temp_max);
+
+sunrises.setText(sunrise);
+
+sunsets.setText(sunset);
+
+} catch (Exception e) {
+
+Toast.makeText(MainActivity.this, “Error:” + e.toString(), Toast.LENGTH_SHORT).show();
+
+}
+
+}
+
+}
